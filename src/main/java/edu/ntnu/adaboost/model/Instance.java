@@ -2,14 +2,14 @@ package edu.ntnu.adaboost.model;
 
 import java.util.List;
 
-public class Data {
+public class Instance {
 
     private List<Double> features;
-    private int label;
+    private int clazz;
     private double weight;
 
-    public Data(List<Double> features, int label) {
-        this.label = label;
+    public Instance(List<Double> features, int clazz) {
+        this.clazz = clazz;
         this.features = features;
         weight = 1;
     }
@@ -18,8 +18,8 @@ public class Data {
         return features;
     }
 
-    public int getLabel() {
-        return label;
+    public int getClazz() {
+        return clazz;
     }
 
     public double getWeight() {

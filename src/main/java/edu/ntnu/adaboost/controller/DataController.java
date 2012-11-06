@@ -1,6 +1,6 @@
 package edu.ntnu.adaboost.controller;
 
-import edu.ntnu.adaboost.model.Data;
+import edu.ntnu.adaboost.model.Instance;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -10,15 +10,15 @@ import java.util.List;
 
 public class DataController {
 
-    public List<Data> load(String filename) throws IOException, IntegrityException {
+    public List<Instance> load(String filename) throws IOException, IntegrityException {
         FileReader fileReader = new FileReader(filename);
         BufferedReader bufferedReader = new BufferedReader(fileReader);
-        List<Data> dataset = new ArrayList<Data>();
+        List<Instance> dataset = new ArrayList<Instance>();
 
         String line = bufferedReader.readLine();
         while (line != null) {
-            Data data = extractData(line);
-            dataset.add(data);
+            Instance instance = extractData(line);
+            dataset.add(instance);
             line = bufferedReader.readLine();
         }
 
@@ -27,7 +27,7 @@ public class DataController {
         return dataset;
     }
 
-    private Data extractData(String line) {
+    private Instance extractData(String line) {
         String[] pieces = line.split(",");
 
         // Features
@@ -40,19 +40,19 @@ public class DataController {
         // Label
         int label = Integer.parseInt(pieces[pieces.length - 1]);
 
-        return new Data(features, label);
+        return new Instance(features, label);
     }
 
-    private void validateIntegrity(List<Data> dataset) throws IntegrityException {
+    private void validateIntegrity(List<Instance> dataset) throws IntegrityException {
         if(dataset.isEmpty()){
             throw new IntegrityException("Empty dataset");
         }
 
         int featureCount = dataset.get(0).getFeatures().size();
 
-        for(Data data : dataset){
-            if(data.getFeatures().size() != featureCount){
-                throw new IntegrityException("All data should have the same number of features");
+        for(Instance instance : dataset){
+            if(instance.getFeatures().size() != featureCount){
+                throw new IntegrityException("All instance should have the same number of features");
             }
         }
     }
