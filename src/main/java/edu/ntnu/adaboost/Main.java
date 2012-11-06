@@ -19,6 +19,11 @@ public class Main {
             String filename = cmd.getOptionValue("f");
             String[] classifiersCount = cmd.getOptionValues("n");
 
+            int dtcMaxDepth = 0;
+            if (cmd.hasOption("d")) {
+                dtcMaxDepth = Integer.parseInt(cmd.getOptionValue("d"));
+            }
+
             int nbcCount = 0;
             int dtcCount = 0;
             if (classifiersCount.length == 2) {
@@ -32,7 +37,7 @@ public class Main {
 
             Injector injector = Guice.createInjector(new AdaboostModule());
             AppController learningController = injector.getInstance(AppController.class);
-            learningController.start(filename, trainTestRatio, nbcCount, dtcCount);
+            learningController.start(filename, trainTestRatio, nbcCount, dtcCount, dtcMaxDepth);
         } catch (ParseException e) {
             e.printStackTrace();
             HelpFormatter helpFormatter = new HelpFormatter();
@@ -49,10 +54,13 @@ public class Main {
                 .isRequired().create("n");
         Option percentageTraining = OptionBuilder.withArgName("PERCENTAGE").hasArg().withDescription("The percentage " +
                 "of the data set to be used for training(ex: 80)").isRequired().create("p");
+        Option maxDepth = OptionBuilder.withArgName("DEPTH").hasArg().withDescription("the maximum depth for the DTCs" +
+                " [Default: 0 which means maximum possible depth]").create("d");
 
         options.addOption(filename);
         options.addOption(classifierCount);
         options.addOption(percentageTraining);
+        options.addOption(maxDepth);
 
         return options;
     }

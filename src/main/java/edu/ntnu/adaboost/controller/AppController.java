@@ -26,7 +26,7 @@ public class AppController {
         this.logger = logger;
     }
 
-    public void start(String filename, double trainTestRatio, int nbcCount, int dtcCount) {
+    public void start(String filename, double trainTestRatio, int nbcCount, int dtcCount, int dtcMaxDepth) {
         try {
             List<Instance> dataset = dataController.load(filename);
             logger.log("Number of instances: " + dataset.size());
@@ -37,7 +37,7 @@ public class AppController {
             logger.log("Number of training instances: " + trainingSet.size());
             logger.log("Number of test instances: " + testSet.size());
 
-            List<Classifier> classifiers = createClassifiers(nbcCount, dtcCount);
+            List<Classifier> classifiers = createClassifiers(nbcCount, dtcCount, dtcMaxDepth);
 
             Adaboost adaboost = new Adaboost(classifiers);
             adaboost.train(trainingSet);
@@ -91,7 +91,7 @@ public class AppController {
         logger.log("Test error: " + testError);
     }
 
-    private List<Classifier> createClassifiers(int nbcCount, int dtcCount) {
+    private List<Classifier> createClassifiers(int nbcCount, int dtcCount, int dtcMaxDepth) {
         List<Classifier> classifiers = new ArrayList<Classifier>();
 
         logger.log("Number of NBCs: " + nbcCount);
@@ -101,7 +101,7 @@ public class AppController {
 
         logger.log("Number of DTCs: " + dtcCount);
         for (int i = 0; i < dtcCount; i++) {
-            classifiers.add(new DecisionTreeClassifier());
+            classifiers.add(new DecisionTreeClassifier(dtcMaxDepth));
         }
 
         return classifiers;

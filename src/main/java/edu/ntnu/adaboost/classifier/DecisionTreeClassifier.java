@@ -5,6 +5,13 @@ import edu.ntnu.adaboost.model.Instance;
 import java.util.List;
 
 public class DecisionTreeClassifier implements Classifier {
+
+    private final int dtcMaxDepth;
+
+    public DecisionTreeClassifier(int dtcMaxDepth) {
+        this.dtcMaxDepth = dtcMaxDepth;
+    }
+
     @Override
     public void train(List<Instance> trainingSet) {
         // TODO: Implement
@@ -15,4 +22,5 @@ public class DecisionTreeClassifier implements Classifier {
         // TODO: Implement
         return 0;
     }
+
 }
