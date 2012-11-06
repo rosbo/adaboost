@@ -54,7 +54,7 @@ public class Main {
                 .isRequired().create("n");
         Option percentageTraining = OptionBuilder.withArgName("PERCENTAGE").hasArg().withDescription("The percentage " +
                 "of the data set to be used for training(ex: 80)").isRequired().create("p");
-        Option maxDepth = OptionBuilder.withArgName("DEPTH").hasArg().withDescription("the maximum depth for the DTCs" +
+        Option maxDepth = OptionBuilder.withArgName("DEPTH").hasArg().withDescription("The maximum depth for the DTCs" +
                 " [Default: 0 which means maximum possible depth]").create("d");
 
         options.addOption(filename);
