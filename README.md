@@ -17,3 +17,11 @@ Usage
 If you want to work with the page-blocks dataset, use 10 NBC and 10 DTC(with a max depth of 2) and split the use 80% of the dataset as a training set and the other 20% as a test set, type de following parameters:
     
     -f datasets/page-blocks.txt -m 50 -n 10 0 -p 80 -d 2
+
+Good choice of parameter m
+-----------------
+For dataset:
+
+ - "page-blocks" use m = 50
+ - "glass" use m = 10
+ - "yeast" use m = 4
