@@ -18,7 +18,7 @@ If you want to work with the page-blocks dataset, use 10 NBC and 10 DTC(with a m
     
     -f datasets/page-blocks.txt -m 50 -n 10 0 -p 80 -d 2
 
-Good choice of parameter m
+Good choice for parameter m
 -----------------
 For dataset:
 
