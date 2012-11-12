@@ -26,9 +26,10 @@ public class AppController {
         this.logger = logger;
     }
 
-    public void start(String filename, double trainTestRatio, int nbcCount, int dtcCount, int dtcMaxDepth) {
+    public void start(String filename, int maxDifferentValuesPerFeature, double trainTestRatio, int nbcCount,
+                      int dtcCount, int dtcMaxDepth) {
         try {
-            List<Instance> dataset = dataController.load(filename);
+            List<Instance> dataset = dataController.load(filename, maxDifferentValuesPerFeature);
             logger.log("Number of instances: " + dataset.size());
 
             DatasetSplitter<Instance> datasetSplitter = new DatasetSplitter<Instance>(dataset, trainTestRatio, true);
@@ -89,7 +90,7 @@ public class AppController {
         }
 
         double testAccuracy = (testSet.size() - numberOfErrors) / (double) testSet.size();
-        logger.log("Test error: " + numberOfErrors / (double)  testSet.size());
+        logger.log("Test error: " + numberOfErrors / (double) testSet.size());
         logger.log("Test accuracy: " + testAccuracy);
     }
 

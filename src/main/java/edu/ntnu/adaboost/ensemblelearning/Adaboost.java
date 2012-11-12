@@ -67,7 +67,8 @@ public class Adaboost {
     }
 
     private boolean updateWeights(Classifier classifier,
-                                  ClassifierStatistics classifierStatistics, List<Instance> trainingSet, int numberOfDifferentLabels) {
+                                  ClassifierStatistics classifierStatistics, List<Instance> trainingSet,
+                                  int numberOfDifferentLabels) {
         double error = 0;
         int errorCount = 0;
 
@@ -85,7 +86,8 @@ public class Adaboost {
             int predictLabel = classifier.predict(trainingInstance.getFeatures());
 
             if (predictLabel != trainingInstance.getClazz()) {
-                trainingInstance.setWeight(trainingInstance.getWeight() * ((1 - error) / error) * (numberOfDifferentLabels - 1));
+                trainingInstance.setWeight(trainingInstance.getWeight() * ((1 - error) / error) *
+                        (numberOfDifferentLabels - 1));
             }
         }
 
@@ -125,7 +127,7 @@ public class Adaboost {
     private int getNumberOfDifferentLabels(List<Instance> trainingSet) {
         Multiset<Integer> classMultiset = HashMultiset.create();
 
-        for(Instance trainingInstance : trainingSet){
+        for (Instance trainingInstance : trainingSet) {
             classMultiset.add(trainingInstance.getClazz());
         }
 

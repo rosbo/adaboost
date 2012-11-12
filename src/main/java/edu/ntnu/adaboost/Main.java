@@ -17,6 +17,7 @@ public class Main {
             CommandLine cmd = parser.parse(options, args);
 
             String filename = cmd.getOptionValue("f");
+            int maxDifferentValuesPerFeature = Integer.parseInt(cmd.getOptionValue("m"));
             String[] classifiersCount = cmd.getOptionValues("n");
 
             int dtcMaxDepth = 0;
@@ -37,7 +38,8 @@ public class Main {
 
             Injector injector = Guice.createInjector(new AdaboostModule());
             AppController learningController = injector.getInstance(AppController.class);
-            learningController.start(filename, trainTestRatio, nbcCount, dtcCount, dtcMaxDepth);
+            learningController.start(filename, maxDifferentValuesPerFeature, trainTestRatio, nbcCount, dtcCount,
+                    dtcMaxDepth);
         } catch (ParseException e) {
             e.printStackTrace();
             HelpFormatter helpFormatter = new HelpFormatter();
@@ -49,6 +51,9 @@ public class Main {
         Options options = new Options();
         Option filename = OptionBuilder.withArgName("FILENAME").hasArg().withDescription("The name of the data file")
                 .isRequired().create("f");
+        Option maxDifferentValuesPerFeature = OptionBuilder.withArgName("MAX").hasArg().withDescription("Max number " +
+                "of different values per feature")
+                .isRequired().create("m");
         Option classifierCount = OptionBuilder.withArgName("NBC DTC").hasArgs(2).withDescription("Number of NBC and " +
                 "DTC")
                 .isRequired().create("n");
@@ -58,6 +63,7 @@ public class Main {
                 " [Default: 0 which means maximum possible depth]").create("d");
 
         options.addOption(filename);
+        options.addOption(maxDifferentValuesPerFeature);
         options.addOption(classifierCount);
         options.addOption(percentageTraining);
         options.addOption(maxDepth);
