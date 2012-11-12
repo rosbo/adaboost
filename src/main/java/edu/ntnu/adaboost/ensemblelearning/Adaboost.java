@@ -89,7 +89,7 @@ public class Adaboost {
             }
         }
 
-        if (error > (numberOfDifferentLabels - 1) / numberOfDifferentLabels) {
+        if (error >= (numberOfDifferentLabels - 1) / (double) numberOfDifferentLabels) {
             // Bad classifier, so toss it out
             return false;
         }
