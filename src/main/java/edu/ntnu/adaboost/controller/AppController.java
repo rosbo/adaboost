@@ -79,16 +79,18 @@ public class AppController {
     }
 
     private void computeTestError(List<Instance> testSet, Adaboost adaboost) {
-        double testError = 0;
+        int numberOfErrors = 0;
         for (Instance testInstance : testSet) {
             int predictedClass = adaboost.predict(testInstance.getFeatures());
 
             if (predictedClass != testInstance.getClazz()) {
-                testError++;
+                numberOfErrors++;
             }
         }
-        testError = testError / (double) testSet.size();
-        logger.log("Test error: " + testError);
+
+        double testAccuracy = (testSet.size() - numberOfErrors) / (double) testSet.size();
+        logger.log("Test error: " + numberOfErrors / (double)  testSet.size());
+        logger.log("Test accuracy: " + testAccuracy);
     }
 
     private List<Classifier> createClassifiers(int nbcCount, int dtcCount, int dtcMaxDepth) {
