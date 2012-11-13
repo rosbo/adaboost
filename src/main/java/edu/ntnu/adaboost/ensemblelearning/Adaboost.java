@@ -1,5 +1,7 @@
 package edu.ntnu.adaboost.ensemblelearning;
 
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multiset;
 import edu.ntnu.adaboost.classifier.Classifier;
 import edu.ntnu.adaboost.classifier.ClassifierStatistics;
 import edu.ntnu.adaboost.model.Instance;
@@ -22,13 +24,17 @@ public class Adaboost {
 
     public void train(List<Instance> trainingSet) {
         initializeUniformWeights(trainingSet);
+        int numberOfDifferentLabels = getNumberOfDifferentLabels(trainingSet);
 
         for (Map.Entry<Classifier, ClassifierStatistics> entry : weightedClassifiers.entrySet()) {
             Classifier classifier = entry.getKey();
             ClassifierStatistics classifierStatistics = entry.getValue();
 
-            classifier.train(trainingSet);
-            updateWeights(classifier, classifierStatistics, trainingSet);
+            boolean isValid = false;
+            while (!isValid) {
+                classifier.train(trainingSet);
+                isValid = updateWeights(classifier, classifierStatistics, trainingSet, numberOfDifferentLabels);
+            }
         }
     }
 
@@ -60,8 +66,9 @@ public class Adaboost {
         return weightedClassifiers;
     }
 
-    private void updateWeights(Classifier classifier,
-                               ClassifierStatistics classifierStatistics, List<Instance> trainingSet) {
+    private boolean updateWeights(Classifier classifier,
+                                  ClassifierStatistics classifierStatistics, List<Instance> trainingSet,
+                                  int numberOfDifferentLabels) {
         double error = 0;
         int errorCount = 0;
 
@@ -71,9 +78,22 @@ public class Adaboost {
             if (predictLabel != trainingInstance.getClazz()) {
                 error += trainingInstance.getWeight();
                 errorCount++;
-            } else {
-                trainingInstance.setWeight(trainingInstance.getWeight() * (error / (1 - error)));
             }
+        }
+
+        // We must update the weight before tossing bad classifier to avoid infinite loop
+        for (Instance trainingInstance : trainingSet) {
+            int predictLabel = classifier.predict(trainingInstance.getFeatures());
+
+            if (predictLabel != trainingInstance.getClazz()) {
+                trainingInstance.setWeight(trainingInstance.getWeight() * ((1 - error) / error) *
+                        (numberOfDifferentLabels - 1));
+            }
+        }
+
+        if (error >= (numberOfDifferentLabels - 1) / (double) numberOfDifferentLabels) {
+            // Bad classifier, so toss it out
+            return false;
         }
 
         normalizeWeights(trainingSet);
@@ -82,6 +102,8 @@ public class Adaboost {
         double trainingError = (double) errorCount / trainingSet.size();
         classifierStatistics.setWeight(classifierWeight);
         classifierStatistics.setTrainingError(trainingError);
+
+        return true;
     }
 
     private void initializeUniformWeights(List<Instance> trainingSet) {
@@ -100,6 +122,16 @@ public class Adaboost {
         for (Instance trainingInstance : trainingSet) {
             trainingInstance.setWeight(trainingInstance.getWeight() / totalWeight);
         }
+    }
+
+    private int getNumberOfDifferentLabels(List<Instance> trainingSet) {
+        Multiset<Integer> classMultiset = HashMultiset.create();
+
+        for (Instance trainingInstance : trainingSet) {
+            classMultiset.add(trainingInstance.getClazz());
+        }
+
+        return classMultiset.elementSet().size();
     }
 
 }
