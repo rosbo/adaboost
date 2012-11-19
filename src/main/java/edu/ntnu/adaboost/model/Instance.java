@@ -44,4 +44,8 @@ public class Instance {
         this.weight = weight;
     }
 
+    @Override
+    public String toString() {
+        return "Instance [features=" + features + ", clazz=" + clazz + ", weight=" + weight + "]";
+    }
 }

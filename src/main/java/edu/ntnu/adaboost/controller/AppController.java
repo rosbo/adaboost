@@ -1,9 +1,6 @@
 package edu.ntnu.adaboost.controller;
 
-import edu.ntnu.adaboost.classifier.Classifier;
-import edu.ntnu.adaboost.classifier.ClassifierStatistics;
-import edu.ntnu.adaboost.classifier.DecisionTreeClassifier;
-import edu.ntnu.adaboost.classifier.NaiveBayesianClassifier;
+import edu.ntnu.adaboost.classifier.*;
 import edu.ntnu.adaboost.ensemblelearning.Adaboost;
 import edu.ntnu.adaboost.model.Instance;
 import edu.ntnu.adaboost.utils.DatasetSplitter;
@@ -19,11 +16,14 @@ import java.util.Map;
 public class AppController {
     private final DataController dataController;
     private final Logger logger;
+    private final DecisionTreeClassifierHelper decisionTreeClassifierHelper;
 
     @Inject
-    public AppController(final DataController dataController, final Logger logger) {
+    public AppController(final DataController dataController, final Logger logger, final DecisionTreeClassifierHelper
+            decisionTreeClassifierHelper) {
         this.dataController = dataController;
         this.logger = logger;
+        this.decisionTreeClassifierHelper = decisionTreeClassifierHelper;
     }
 
     public void start(String filename, int maxDifferentValuesPerFeature, double trainTestRatio, int nbcCount,
@@ -104,7 +104,7 @@ public class AppController {
 
         logger.log("Number of DTCs: " + dtcCount);
         for (int i = 0; i < dtcCount; i++) {
-            classifiers.add(new DecisionTreeClassifier(dtcMaxDepth));
+            classifiers.add(new DecisionTreeClassifier(dtcMaxDepth, decisionTreeClassifierHelper));
         }
 
         return classifiers;
