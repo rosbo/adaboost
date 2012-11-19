@@ -1,7 +1,6 @@
 package edu.ntnu.adaboost.dependencyinjection;
 
 import com.google.inject.AbstractModule;
-
 import edu.ntnu.adaboost.classifier.DecisionTreeClassifierHelper;
 import edu.ntnu.adaboost.controller.AppController;
 import edu.ntnu.adaboost.controller.DataController;

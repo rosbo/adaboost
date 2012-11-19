@@ -55,7 +55,7 @@ public class Node {
     @Override
     public String toString() {
         return "Node [clazz=" + clazz + ", featureId=" + featureId + ", successors=" + successors + ", isLeaf="
-                        + isLeaf + "]";
+                + isLeaf + "]";
     }
 
     public void setFeatureId(int featureId) {

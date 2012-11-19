@@ -13,7 +13,7 @@ public class DatasetSplitter<T> {
             Collections.shuffle(dataset);
         }
 
-        int splitPosition = (int) Math.round(dataset.size()*ratio);
+        int splitPosition = (int) Math.round(dataset.size() * ratio);
         trainingSet = dataset.subList(0, splitPosition);
         testSet = dataset.subList(splitPosition, dataset.size());
     }
