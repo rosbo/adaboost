@@ -1,6 +1,9 @@
 package edu.ntnu.adaboost.classifier;
 
-import com.google.common.collect.*;
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multiset;
+import com.google.common.collect.Table;
 import edu.ntnu.adaboost.model.Instance;
 import edu.ntnu.adaboost.utils.FractionalMultiSet;
 
@@ -35,13 +38,13 @@ public class NaiveBayesianClassifier implements Classifier {
 
         for (Integer clazz : attrGivenClassProbability.rowKeySet()) {
             // P(Class)
-            double prob = (double) classProbability.count(clazz)/classProbability.size();
+            double prob = (double) classProbability.count(clazz) / classProbability.size();
 
             // Multiplication of all P(attr|class)
             int featureNumber = 0;
-            for(Double featureValue : features){
+            for (Double featureValue : features) {
                 FractionalMultiSet<Double> featureCountGivenClass = attrGivenClassProbability.get(clazz, featureNumber);
-                prob *= featureCountGivenClass.getValue(featureValue)/featureCountGivenClass.sum();
+                prob *= featureCountGivenClass.getValue(featureValue) / featureCountGivenClass.sum();
 
                 featureNumber++;
             }

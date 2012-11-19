@@ -1,23 +1,17 @@
 package edu.ntnu.adaboost.controller;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import javax.inject.Inject;
-
-import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
-
-import edu.ntnu.adaboost.classifier.Classifier;
-import edu.ntnu.adaboost.classifier.ClassifierStatistics;
-import edu.ntnu.adaboost.classifier.DecisionTreeClassifier;
-import edu.ntnu.adaboost.classifier.DecisionTreeClassifierHelper;
-import edu.ntnu.adaboost.classifier.NaiveBayesianClassifier;
+import edu.ntnu.adaboost.classifier.*;
 import edu.ntnu.adaboost.ensemblelearning.Adaboost;
 import edu.ntnu.adaboost.model.Instance;
 import edu.ntnu.adaboost.utils.DatasetSplitter;
 import edu.ntnu.adaboost.utils.Logger;
+import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
+
+import javax.inject.Inject;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class AppController {
     private final DataController dataController;
@@ -25,7 +19,8 @@ public class AppController {
     private final DecisionTreeClassifierHelper decisionTreeClassifierHelper;
 
     @Inject
-    public AppController(final DataController dataController, final Logger logger,final DecisionTreeClassifierHelper decisionTreeClassifierHelper) {
+    public AppController(final DataController dataController, final Logger logger, final DecisionTreeClassifierHelper
+            decisionTreeClassifierHelper) {
         this.dataController = dataController;
         this.logger = logger;
         this.decisionTreeClassifierHelper = decisionTreeClassifierHelper;
@@ -109,7 +104,7 @@ public class AppController {
 
         logger.log("Number of DTCs: " + dtcCount);
         for (int i = 0; i < dtcCount; i++) {
-            classifiers.add(new DecisionTreeClassifier(dtcMaxDepth,decisionTreeClassifierHelper));
+            classifiers.add(new DecisionTreeClassifier(dtcMaxDepth, decisionTreeClassifierHelper));
         }
 
         return classifiers;

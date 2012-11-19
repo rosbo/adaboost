@@ -1,13 +1,8 @@
 package edu.ntnu.adaboost.classifier;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import edu.ntnu.adaboost.model.Instance;
+
+import java.util.*;
 
 public class DecisionTreeClassifierHelper {
     public Node QuinlanDT(List<Instance> instances, List<Integer> features, int depth) {
