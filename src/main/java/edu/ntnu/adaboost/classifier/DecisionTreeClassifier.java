@@ -1,8 +1,9 @@
 package edu.ntnu.adaboost.classifier;
 
-import java.util.List;
-import java.util.ArrayList;
 import edu.ntnu.adaboost.model.Instance;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DecisionTreeClassifier implements Classifier {
 
@@ -16,7 +17,6 @@ public class DecisionTreeClassifier implements Classifier {
         this.decisionTreeClassifierHelper = decisionTreeClassifierHelper;
     }
 
-    // @Override
     public void train(List<Instance> trainingSet) {
         List<Integer> featureIds = new ArrayList<Integer>();
         for (int i = 0; i < trainingSet.get(0).featureCount(); i++) {
@@ -25,7 +25,6 @@ public class DecisionTreeClassifier implements Classifier {
         this.rootNode = decisionTreeClassifierHelper.QuinlanDT(trainingSet, featureIds, dtcMaxDepth);
     }
 
-    // @Override
     public int predict(List<Double> features) {
         int currentFeatureId = rootNode.getFeatureId();
         double currentFeatureValue = features.get(currentFeatureId);
