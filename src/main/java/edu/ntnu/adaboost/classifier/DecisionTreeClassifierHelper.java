@@ -1,11 +1,17 @@
 package edu.ntnu.adaboost.classifier;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multiset;
+import com.google.common.math.DoubleMath;
 import edu.ntnu.adaboost.model.Instance;
 
 import java.util.*;
 
 public class DecisionTreeClassifierHelper {
-    public Node QuinlanDT(List<Instance> instances, List<Integer> features, int depth) {
+
+    public Node QuinlanDT(Collection<Instance> instances, List<Integer> features, int depth) {
         if (depth == 0 || (features.size() == 0 && instances.size() != 0) || features.size() <= 0) {
             return new Node(-1, 0, true);
         }
@@ -13,30 +19,27 @@ public class DecisionTreeClassifierHelper {
         // test each feature to find f*
         int fStar = chooseFeatureThatMinimizesAvgEntropy(instances, features);
         Node root = new Node(-1, fStar, false);
+
         // f* partitions instances into subset where k = number of possibile
         // values of f*
-        Map<Double, List<Instance>> partitions = new HashMap<Double, List<Instance>>();
+        Multimap<Double, Instance> partitions = ArrayListMultimap.create();
         for (Instance instance : instances) {
             double value = instance.getFeatures().get(fStar);
-            List<Instance> tmp = partitions.get(value);
-            if (tmp == null) {
-                tmp = new ArrayList<Instance>();
-            }
-            tmp.add(instance);
-            partitions.put(value, tmp);
+            partitions.put(value, instance);
         }
+
         // for each partition
         for (Double partitionValue : partitions.keySet()) {
             // chech if each instance in a partition share the same class
-            List<Instance> partition = partitions.get(partitionValue);
-            int classValueToBeSHared = partition.get(0).getClazz();
-            boolean shareSameClass = true;
-            for (Instance instance : partition) {
-                if (instance.getClazz() != classValueToBeSHared) {
-                    shareSameClass = false;
-                    break;
-                }
+            Collection<Instance> partition = partitions.get(partitionValue);
+
+            Multiset<Integer> classesInPartition = HashMultiset.create();
+            for(Instance instance : partition){
+                classesInPartition.add(instance.getClazz());
             }
+
+            boolean shareSameClass = classesInPartition.elementSet().size() == 1;
+
             if (!shareSameClass) {
                 // call QuinlanDt(Si, features - f*)
                 features.remove(fStar);
@@ -44,14 +47,15 @@ public class DecisionTreeClassifierHelper {
                 features.add(fStar);
             } else {
                 // create a leaf node with the same class as the instances of Si
-                Node leaf = new Node(classValueToBeSHared, fStar, true);
+                Integer clazz = classesInPartition.elementSet().iterator().next();
+                Node leaf = new Node(clazz, fStar, true);
                 root.addSuccessor(partitionValue, leaf);
             }
         }
         return root;
     }
 
-    public int chooseFeatureThatMinimizesAvgEntropy(List<Instance> instances, List<Integer> features) {
+    public int chooseFeatureThatMinimizesAvgEntropy(Collection<Instance> instances, List<Integer> features) {
         int featureCount = features.size();
         int featureMin = 0;
         double minAvgEnt = Double.MAX_VALUE;
@@ -65,15 +69,7 @@ public class DecisionTreeClassifierHelper {
         return featureMin;
     }
 
-    private double log2(double value) {
-        if (value == 0) {
-            return 0.0;// to avoid NaN (infinite)
-        }
-        return Math.log(value) / Math.log(2.0);
-    }
-
-    public double calculateAverageEntropy(List<Instance> instances, int idFeature) {
-
+    public double calculateAverageEntropy(Collection<Instance> instances, int idFeature) {
         double entropyAverage = 0.0;
         Set<Integer> classValues = new HashSet<Integer>();
         double totalWeight = 0.0;
@@ -84,23 +80,18 @@ public class DecisionTreeClassifierHelper {
 
         // Ex: Red -> 1,1,1,11,2,3,1,3
         // Blue -> 2,3,4,1,1,1
-        Map<Double, List<Integer>> featureValue2classValues = new HashMap<Double, List<Integer>>();
+        Multimap<Double, Integer> featureValue2classValues = ArrayListMultimap.create();
         Map<Double, Double> featureValue2partitionWeight = new HashMap<Double, Double>();
         for (Instance instance : instances) {
             // for calculating feature2class
             Double value = instance.getFeatures().get(idFeature);
             int clazz = instance.getClazz();
-            List<Integer> tmp = featureValue2classValues.get(value);
-            if (tmp == null) {
-                tmp = new ArrayList<Integer>();
-            }
-            tmp.add(clazz);
-            featureValue2classValues.put(value, tmp);
+            featureValue2classValues.put(value, clazz);
             // for calculating feature2weight
             double instanceWeight = instance.getWeight();
             Double partialWeight = featureValue2partitionWeight.get(value);
             if (partialWeight == null) {
-                partialWeight = new Double(0);
+                partialWeight = 0.0;
             }
             partialWeight += instanceWeight;
             featureValue2partitionWeight.put(value, partialWeight);
@@ -108,23 +99,28 @@ public class DecisionTreeClassifierHelper {
 
         for (Double featureValue : featureValue2classValues.keySet()) {// red,blue...
             double partitionWeight = featureValue2partitionWeight.get(featureValue);
-            double featureValueOccurrences = 0.0;
+            double featureValueOccurrences;
             double featureValueEntropy = 0.0;
             for (Integer classValue : classValues) {
                 int classValueOccurrences = 0;
-                List<Integer> classValuesList = featureValue2classValues.get(featureValue);
-                for (int i = 0; i < classValuesList.size(); i++) {
-                    if (classValuesList.get(i).equals(classValue)) {
+                Collection<Integer> classValuesList = featureValue2classValues.get(featureValue);
+                for (Integer aClassValue : classValuesList) {
+                    if (aClassValue.equals(classValue)) {
                         classValueOccurrences++;
                     }
                 }
                 featureValueOccurrences = classValuesList.size();
                 double probability = classValueOccurrences / featureValueOccurrences;
-                featureValueEntropy += (-1) * probability * log2(probability);
+                if (probability == 0) {
+                    featureValueEntropy = 0;
+                } else {
+                    featureValueEntropy += (-1) * probability * DoubleMath.log2(probability);
+                }
 
             }
             entropyAverage += partitionWeight / totalWeight * featureValueEntropy;
         }
         return entropyAverage;
     }
+
 }
