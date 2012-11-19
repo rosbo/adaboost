@@ -20,37 +20,34 @@ public class DecisionTreeClassifier implements Classifier {
     public void train(List<Instance> trainingSet) {
         List<Integer> featureIds = new ArrayList<Integer>();
         for (int i = 0; i < trainingSet.get(0).featureCount(); i++) {
-            featureIds.add(new Integer(i));
+            featureIds.add(i);
         }
         this.rootNode = decisionTreeClassifierHelper.QuinlanDT(trainingSet, featureIds, dtcMaxDepth);
     }
 
     public int predict(List<Double> features) {
         int currentFeatureId = rootNode.getFeatureId();
-        double currentFeatureValue = features.get(currentFeatureId);
         int classPredicted = rootNode.getClazz();
+        double currentFeatureValue;
         Node currentNode = rootNode;
-        while (!currentNode.isLeaf() || currentNode == null) {
+
+        while (currentNode != null && !currentNode.isLeaf()) {
             currentFeatureValue = features.get(currentFeatureId);
             currentNode = currentNode.getSuccessors().get(currentFeatureValue);
 
             if (currentNode == null) { // unknown feature value
                 classPredicted = -1;
-                break;
+            } else {
+                classPredicted = currentNode.getClazz();
+                currentFeatureId = currentNode.getFeatureId();
             }
-
-            classPredicted = currentNode.getClazz();
-            currentFeatureId = currentNode.getFeatureId();
         }
+
         return classPredicted;
     }
 
     public Node getRootNode() {
         return rootNode;
-    }
-
-    public void setRootNode(Node rootNode) {
-        this.rootNode = rootNode;
     }
 
 }
