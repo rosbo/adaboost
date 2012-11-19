@@ -11,7 +11,7 @@ public class NaiveBayesianClassifier implements Classifier {
     private Multiset<Integer> classProbability = HashMultiset.create();
     private Table<Integer, Integer, FractionalMultiSet<Double>> attrGivenClassProbability = HashBasedTable.create();
 
-    @Override
+//    @Override
     public void train(List<Instance> trainingSet) {
         for (Instance instance : trainingSet) {
             int featureNumber = 0;
@@ -30,7 +30,7 @@ public class NaiveBayesianClassifier implements Classifier {
         }
     }
 
-    @Override
+//    @Override
     public int predict(List<Double> features) {
         int bestClass = -1;
         double bestProb = 0;
