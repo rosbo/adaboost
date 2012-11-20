@@ -84,6 +84,7 @@ public class Adaboost {
         }
 
         double trainingError = (double) errorCount / trainingSet.size();
+        double classifierWeight;
 
         if (error >= (L - 1) / (double) L) {
             jiggleWeights(trainingSet, beta);
@@ -100,15 +101,14 @@ public class Adaboost {
             }
 
             normalizeWeights(trainingSet);
-
-            double classifierWeight = Math.log((1 - error) / error);
-            classifierStatistics.setWeight(classifierWeight);
-            classifierStatistics.setTrainingError(trainingError);
+            classifierWeight = Math.log((1 - error) / error);
         } else {
             jiggleWeights(trainingSet, beta);
-            classifierStatistics.setWeight(10 + Math.log(L - 1));
-            classifierStatistics.setTrainingError(trainingError);
+            classifierWeight = 10 + Math.log(L - 1);
         }
+
+        classifierStatistics.setWeight(classifierWeight);
+        classifierStatistics.setTrainingError(trainingError);
 
         return true;
     }
