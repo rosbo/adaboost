@@ -22,6 +22,8 @@ Good choice for parameter m
 -----------------
 For dataset:
 
- - "page-blocks" use m = 50
- - "glass" use m = 10
- - "yeast" use m = 4
+ - "page-blocks" use m = 75
+ - "glass" use m = 15
+ - "pen-digits" use m = 100
+ - "yeast" use m = 100
+ - "optdigits" use m = 16
