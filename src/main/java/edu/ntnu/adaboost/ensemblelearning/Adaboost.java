@@ -16,8 +16,10 @@ public class Adaboost {
 
     private final Map<Classifier, ClassifierStatistics> weightedClassifiers = new HashMap<Classifier,
             ClassifierStatistics>();
+    private final boolean keepLosers;
 
-    public Adaboost(List<Classifier> classifiers) {
+    public Adaboost(List<Classifier> classifiers, boolean keepLosers) {
+        this.keepLosers = keepLosers;
         for (Classifier classifier : classifiers) {
             weightedClassifiers.put(classifier, new ClassifierStatistics());
         }
@@ -86,11 +88,7 @@ public class Adaboost {
         double trainingError = (double) errorCount / trainingSet.size();
         double classifierWeight;
 
-        if (error >= (L - 1) / (double) L) {
-            jiggleWeights(trainingSet, beta);
-            return false;
-        } else if (error > 0 && error < (L - 1) / (double) L) {
-            // We must update the weight before tossing bad classifier to avoid infinite loop
+        if (keepLosers || error > 0 && error < (L - 1) / (double) L) {
             for (Instance trainingInstance : trainingSet) {
                 int predictLabel = classifier.predict(trainingInstance.getFeatures());
 
@@ -102,6 +100,9 @@ public class Adaboost {
 
             normalizeWeights(trainingSet);
             classifierWeight = Math.log((1 - error) / error);
+        } else if (error >= (L - 1) / (double) L) {
+            jiggleWeights(trainingSet, beta);
+            return false;
         } else {
             jiggleWeights(trainingSet, beta);
             classifierWeight = 10 + Math.log(L - 1);

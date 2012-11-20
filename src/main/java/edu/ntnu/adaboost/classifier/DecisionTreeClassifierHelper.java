@@ -34,7 +34,7 @@ public class DecisionTreeClassifierHelper {
             Collection<Instance> partition = partitions.get(partitionValue);
 
             Multiset<Integer> classesInPartition = HashMultiset.create();
-            for(Instance instance : partition){
+            for (Instance instance : partition) {
                 classesInPartition.add(instance.getClazz());
             }
 

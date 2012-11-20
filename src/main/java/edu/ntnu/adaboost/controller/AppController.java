@@ -30,7 +30,7 @@ public class AppController {
     }
 
     public void start(String filename, int maxDifferentValuesPerFeature, double trainTestRatio, int nbcCount,
-                      int dtcCount, int dtcMaxDepth) {
+                      int dtcCount, int dtcMaxDepth, boolean keepLosers) {
         try {
             List<Instance> dataset = dataController.load(filename, maxDifferentValuesPerFeature);
             DatasetSplitter<Instance> datasetSplitter = new DatasetSplitter<Instance>(dataset, trainTestRatio, true);
@@ -41,7 +41,7 @@ public class AppController {
                     testSet.size() + ")");
 
             List<Classifier> classifiers = createClassifiers(nbcCount, dtcCount, dtcMaxDepth);
-            Adaboost adaboost = new Adaboost(classifiers);
+            Adaboost adaboost = new Adaboost(classifiers, keepLosers);
             adaboost.train(trainingSet);
 
             computeClassifierErrors(testSet, adaboost.getWeightedClassifiers());

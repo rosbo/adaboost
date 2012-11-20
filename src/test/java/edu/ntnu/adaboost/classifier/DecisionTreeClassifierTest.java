@@ -1,20 +1,16 @@
 package edu.ntnu.adaboost.classifier;
 
-import static org.junit.Assert.*;
-import static org.junit.Assert.fail;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import edu.ntnu.adaboost.dependencyinjection.AdaboostModule;
+import edu.ntnu.adaboost.model.Instance;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-
-import edu.ntnu.adaboost.controller.AppController;
-import edu.ntnu.adaboost.dependencyinjection.AdaboostModule;
-import edu.ntnu.adaboost.model.Instance;
+import static org.junit.Assert.assertEquals;
 
 public class DecisionTreeClassifierTest {
 
@@ -27,7 +23,7 @@ public class DecisionTreeClassifierTest {
         Injector injector = Guice.createInjector(new AdaboostModule());
         decisionTreeClassifierHelper = injector.getInstance(DecisionTreeClassifierHelper.class);
         int dtcMaxDepth = 3;
-        dtc = new DecisionTreeClassifier(dtcMaxDepth,decisionTreeClassifierHelper);
+        dtc = new DecisionTreeClassifier(dtcMaxDepth, decisionTreeClassifierHelper);
         instances = new ArrayList<Instance>();
         List<Double> features = new ArrayList<Double>();
         features.add(1.0);
@@ -123,37 +119,37 @@ public class DecisionTreeClassifierTest {
         assertEquals(1, firstChild.getSuccessors().keySet().size());
         assertEquals(0, secondChild.getSuccessors().size());
         assertEquals(1, thirdChild.getSuccessors().size());
-        
+
         //Feature.size == 0 && istances.size != 0 so the class is Unknown due to the ambiguity 
-        assertEquals(-1,firstChild.getSuccessors().get(1.0).getClazz());
-        assertEquals(-1,firstChild.getSuccessors().get(1.0).getClazz());
+        assertEquals(-1, firstChild.getSuccessors().get(1.0).getClazz());
+        assertEquals(-1, firstChild.getSuccessors().get(1.0).getClazz());
     }
-    
+
     @Test
-    public void testPredict(){
+    public void testPredict() {
         this.dtc.train(instances);
         Node root = this.dtc.getRootNode();
         List<Double> instanceToPredict = new ArrayList<Double>();
         instanceToPredict.add(2.0);
         instanceToPredict.add(1.0);
-        assertEquals(1,this.dtc.predict(instanceToPredict));
-        
+        assertEquals(1, this.dtc.predict(instanceToPredict));
+
         instanceToPredict = new ArrayList<Double>();
         instanceToPredict.add(2.0);
         instanceToPredict.add(3.0);
-        assertEquals(1,this.dtc.predict(instanceToPredict));
-        
+        assertEquals(1, this.dtc.predict(instanceToPredict));
+
         //instance with no known values
         instanceToPredict = new ArrayList<Double>();
         instanceToPredict.add(5.0);
         instanceToPredict.add(6.0);
-        assertEquals(-1,this.dtc.predict(instanceToPredict));
-        
+        assertEquals(-1, this.dtc.predict(instanceToPredict));
+
         //unknown because of the ambiguity
         instanceToPredict = new ArrayList<Double>();
         instanceToPredict.add(1.0);
         instanceToPredict.add(1.0);
-        assertEquals(-1,this.dtc.predict(instanceToPredict));
+        assertEquals(-1, this.dtc.predict(instanceToPredict));
     }
 
 }

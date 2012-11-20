@@ -25,6 +25,8 @@ public class Main {
                 dtcMaxDepth = Integer.parseInt(cmd.getOptionValue("d"));
             }
 
+            boolean keepLosers = cmd.hasOption("k");
+
             int nbcCount = 0;
             int dtcCount = 0;
             if (classifiersCount.length == 2) {
@@ -39,7 +41,7 @@ public class Main {
             Injector injector = Guice.createInjector(new AdaboostModule());
             AppController learningController = injector.getInstance(AppController.class);
             learningController.start(filename, maxDifferentValuesPerFeature, trainTestRatio, nbcCount, dtcCount,
-                    dtcMaxDepth);
+                    dtcMaxDepth, keepLosers);
         } catch (ParseException e) {
             e.printStackTrace();
             HelpFormatter helpFormatter = new HelpFormatter();
@@ -67,6 +69,7 @@ public class Main {
         options.addOption(classifierCount);
         options.addOption(percentageTraining);
         options.addOption(maxDepth);
+        options.addOption("k", false, "Keep losers");
 
         return options;
     }
