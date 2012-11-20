@@ -74,22 +74,18 @@ public class AppController {
         }
 
         if (nbcTrainingErrors.getN() > 0) {
-            logger.log("Average of the training errors for NBCs: " + percentageFormat.format(nbcTrainingErrors
-                    .getMean()));
-            logger.log("Standard deviation of the training errors for NBCs: " + percentageFormat.format
-                    (nbcTrainingErrors.getStandardDeviation()));
-            logger.log("Average of the test errors for NBCs: " + percentageFormat.format(nbcTestErrors.getMean()));
-            logger.log("Standard deviation of the test errors for NBCs: " + percentageFormat.format(nbcTestErrors
-                    .getStandardDeviation()));
+            logger.log("--- NBCs");
+            logger.log("AVG training errors: " + percentageFormat.format(nbcTrainingErrors.getMean()));
+            logger.log("SD training errors: " + percentageFormat.format(nbcTrainingErrors.getStandardDeviation()));
+            logger.log("AVG test errors: " + percentageFormat.format(nbcTestErrors.getMean()));
+            logger.log("SD test errors: " + percentageFormat.format(nbcTestErrors.getStandardDeviation()));
         }
         if (dtcTrainingErrors.getN() > 0) {
-            logger.log("Average of the training errors for DTCs: " + percentageFormat.format(dtcTrainingErrors
-                    .getMean()));
-            logger.log("Standard deviation of the training errors for DTCs: " + percentageFormat.format
-                    (dtcTrainingErrors.getStandardDeviation()));
-            logger.log("Average of the test errors for DTCs: " + percentageFormat.format(dtcTestErrors.getMean()));
-            logger.log("Standard deviation of the training test for DTCs: " + percentageFormat.format(dtcTestErrors
-                    .getStandardDeviation()));
+            logger.log("--- DTCs");
+            logger.log("AVG training errors: " + percentageFormat.format(dtcTrainingErrors.getMean()));
+            logger.log("SD training errors: " + percentageFormat.format(dtcTrainingErrors.getStandardDeviation()));
+            logger.log("AVG test errors: " + percentageFormat.format(dtcTestErrors.getMean()));
+            logger.log("SD training test: " + percentageFormat.format(dtcTestErrors.getStandardDeviation()));
         }
     }
 
@@ -104,6 +100,7 @@ public class AppController {
         }
 
         double testAccuracy = (testSet.size() - numberOfErrors) / (double) testSet.size();
+        logger.log("--- Adaboost");
         logger.log("Test error: " + percentageFormat.format(numberOfErrors / (double) testSet.size()));
         logger.log("Test accuracy: " + percentageFormat.format(testAccuracy));
     }
