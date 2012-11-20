@@ -49,7 +49,7 @@ public class Adaboost {
         }
 
         int predictedClass = -1;
-        double bestVote = 0;
+        double bestVote = -Double.MAX_VALUE;
         for (Map.Entry<Integer, Double> entry : classVoting.entrySet()) {
             int clazz = entry.getKey();
             Double vote = entry.getValue();
