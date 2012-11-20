@@ -6,6 +6,7 @@ import edu.ntnu.adaboost.classifier.Classifier;
 import edu.ntnu.adaboost.classifier.ClassifierStatistics;
 import edu.ntnu.adaboost.model.Instance;
 import edu.ntnu.adaboost.utils.FractionalMultiSet;
+import edu.ntnu.adaboost.utils.Random;
 
 import java.util.HashMap;
 import java.util.List;
@@ -68,9 +69,10 @@ public class Adaboost {
 
     private boolean updateWeights(Classifier classifier,
                                   ClassifierStatistics classifierStatistics, List<Instance> trainingSet,
-                                  int numberOfDifferentLabels) {
+                                  int L) {
         double error = 0;
         int errorCount = 0;
+        double beta = 1.5;
 
         for (Instance trainingInstance : trainingSet) {
             int predictLabel = classifier.predict(trainingInstance.getFeatures());
@@ -81,29 +83,44 @@ public class Adaboost {
             }
         }
 
-        // We must update the weight before tossing bad classifier to avoid infinite loop
-        for (Instance trainingInstance : trainingSet) {
-            int predictLabel = classifier.predict(trainingInstance.getFeatures());
-
-            if (predictLabel != trainingInstance.getClazz()) {
-                trainingInstance.setWeight(trainingInstance.getWeight() * ((1 - error) / error) *
-                        (numberOfDifferentLabels - 1));
-            }
-        }
-
-        if (error >= (numberOfDifferentLabels - 1) / (double) numberOfDifferentLabels) {
-            // Bad classifier, so toss it out
-            return false;
-        }
-
-        normalizeWeights(trainingSet);
-
-        double classifierWeight = Math.log((1 - error) / error);
         double trainingError = (double) errorCount / trainingSet.size();
+        double classifierWeight;
+
+        if (error >= (L - 1) / (double) L) {
+            jiggleWeights(trainingSet, beta);
+            return false;
+        } else if (error > 0 && error < (L - 1) / (double) L) {
+            // We must update the weight before tossing bad classifier to avoid infinite loop
+            for (Instance trainingInstance : trainingSet) {
+                int predictLabel = classifier.predict(trainingInstance.getFeatures());
+
+                if (predictLabel != trainingInstance.getClazz()) {
+                    trainingInstance.setWeight(trainingInstance.getWeight() * ((1 - error) / error) *
+                            (L - 1));
+                }
+            }
+
+            normalizeWeights(trainingSet);
+            classifierWeight = Math.log((1 - error) / error);
+        } else {
+            jiggleWeights(trainingSet, beta);
+            classifierWeight = 10 + Math.log(L - 1);
+        }
+
         classifierStatistics.setWeight(classifierWeight);
         classifierStatistics.setTrainingError(trainingError);
 
         return true;
+    }
+
+    private void jiggleWeights(List<Instance> trainingSet, double beta) {
+        double bound = 1 / Math.pow(trainingSet.size(), beta);
+        for (Instance trainingInstance : trainingSet) {
+            double weight = trainingInstance.getWeight();
+            weight = Math.max(0, weight + Random.doubleBetween(-bound, bound));
+            trainingInstance.setWeight(weight);
+        }
+        normalizeWeights(trainingSet);
     }
 
     private void initializeUniformWeights(List<Instance> trainingSet) {
